@@ -52,12 +52,16 @@ const CourseList = ({courses}) => {
             <div>
                 <TermSelector selection={selection} setSelection={setSelection} />
             </div>
+<<<<<<< HEAD
             {/* <div>
                 <CourseSelection selection={selection} termCourses={
                     Object.entries(courses).filter(([id, course]) => (course.term === terms[selection]))
                 }/>
             </div> */}
            
+=======
+
+>>>>>>> a6241ef (term filter)
             <div className="class-list">
                 { termCourses.map(([id, course]) => 
                     <div className="card m-1 p-2">

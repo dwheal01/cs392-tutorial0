@@ -1,5 +1,6 @@
 import './CourseList.css'
 import { useState } from 'react';
+import { Card } from 'react-bootstrap';
 
 const terms = {
     Fall: 'Fall',
@@ -30,23 +31,16 @@ const TermSelector = ({selection, setSelection}) => (
   </div>
 );
 
-const CourseSelection = ({selection, termCourses}) => (
-    <div className="class-list">
-        { termCourses.map(([id, course]) => 
-            <div className="card m-1 p-2">
-                <div className="card-body">
-                    <h5 className="card-title">{course.term} CS {course.number}</h5>
-                    <p className="card-text">{course.title}</p>
-                    <p className="card-text">{course.meets}</p>
-                </div>
-            </div>
-        )}
-    </div>
-);
-
 const CourseList = ({courses}) => {
     const [selection, setSelection] = useState(() => Object.keys(terms)[0]);
-    const termCourses = Object.entries(courses).filter(([id, course]) => (course.term === terms[selection]));
+    const termCourses = Object.entries(courses).filter(([id, course]) => (course.term === terms[selection]));    const [selected, setSelected] = useState([]);
+
+    const toggleSelected = (item) => setSelected(
+      selected.includes(item)
+      ? selected.filter(x => x !== item)
+      : [...selected, item]
+    );
+
     return(
         <div>
             <div>
@@ -54,13 +48,17 @@ const CourseList = ({courses}) => {
             </div>
             <div className="class-list">
                 { termCourses.map(([id, course]) => 
-                    <div className="card m-1 p-2">
-                        <div className="card-body">
-                            <h5 className="card-title">{course.term} CS {course.number}</h5>
-                            <p className="card-text">{course.title}</p>
-                            <p className="card-text">{course.meets}</p>
-                        </div>
-                    </div>
+                    <Card 
+                        className={`shadow ${selected.includes(id) ? 'bg-success text-white' : 'bg-light'}`} 
+                        style={{ width: '18rem', cursor: 'pointer', gap: '20px' }}
+                        onClick={() => toggleSelected(id)}
+                    >
+                        <Card.Body>
+                            <Card.Title>{course.term} CS {course.number}</Card.Title>
+                            <Card.Text>{course.title}</Card.Text>
+                            <Card.Text>{course.meets}</Card.Text>
+                        </Card.Body>    
+                    </Card>
                 )}
             </div>
         </div>

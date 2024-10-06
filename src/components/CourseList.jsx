@@ -1,6 +1,7 @@
 import './CourseList.css'
 import { useState } from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Button, Container } from 'react-bootstrap';
+import ScheduleModal from './ScheduleModal';
 
 const terms = {
     Fall: 'Fall',
@@ -22,7 +23,7 @@ const TermButton = ({term, selection, setSelection}) => {
 }
 
 const TermSelector = ({selection, setSelection}) => (
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+    <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
     { 
       Object.keys(terms).map(
         term => <TermButton key={term} term={term} selection={selection} setSelection={setSelection} />
@@ -33,7 +34,9 @@ const TermSelector = ({selection, setSelection}) => (
 
 const CourseList = ({courses}) => {
     const [selection, setSelection] = useState(() => Object.keys(terms)[0]);
-    const termCourses = Object.entries(courses).filter(([id, course]) => (course.term === terms[selection]));    const [selected, setSelected] = useState([]);
+    const termCourses = Object.entries(courses).filter(([id, course]) => (course.term === terms[selection]));    
+    
+    const [selected, setSelected] = useState([]);
 
     const toggleSelected = (item) => setSelected(
       selected.includes(item)
@@ -41,11 +44,17 @@ const CourseList = ({courses}) => {
       : [...selected, item]
     );
 
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     return(
         <div>
-            <div>
+            <Container className="d-flex justify-content-between">
                 <TermSelector selection={selection} setSelection={setSelection} />
-            </div>
+                <Button onClick={handleShow}>Course Plan</Button>
+            </Container>
             <div className="class-list">
                 { termCourses.map(([id, course]) => 
                     <Card 
@@ -61,6 +70,7 @@ const CourseList = ({courses}) => {
                     </Card>
                 )}
             </div>
+            <ScheduleModal show={show} handleClose={handleClose} selected={selected} termCourses={termCourses}/>
         </div>
        
     );

@@ -3,9 +3,7 @@ import Button from 'react-bootstrap/Button';
 
 
 const ScheduleModal = ({show, handleClose, selected, termCourses}) => {
-    console.log(selected);
     const selectedCourses = termCourses.filter(([id, course]) => selected.includes(id));
-    console.log(selectedCourses);
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>

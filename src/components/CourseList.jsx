@@ -2,6 +2,7 @@ import './CourseList.css'
 import { useState } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
 import ScheduleModal from './ScheduleModal';
+import { useEffect } from 'react';
 
 const terms = {
     Fall: 'Fall',
@@ -35,14 +36,57 @@ const TermSelector = ({selection, setSelection}) => (
 const CourseList = ({courses}) => {
     const [selection, setSelection] = useState(() => Object.keys(terms)[0]);
     const termCourses = Object.entries(courses).filter(([id, course]) => (course.term === terms[selection]));    
-    
+
+    const [notAvailable, setNotAvailable] = useState([]);
+    const checkDayOverlap = (course1days, course2days) => {
+        return ([...course1days.match(/(M|Tu|W|Th|F)/g)].some(day => course2days.includes(day)));
+    }
+    const convertTime = (time) => {
+        const [hour, minute] = time.split(":");
+        return (hour + (minute/60));
+    }
+    const checkTimeOverlap = (course1time, course2time) => {
+        var [start1, end1] = course1time.split("-");
+        start1 = convertTime(start1);
+        end1 = convertTime(end1);
+        var [start2, end2] = course2time.split("-");
+        start2 = convertTime(start2);
+        end2 = convertTime(end2);
+        return (start1 < end2 && start2 < end1);
+    }
+    const toggleAvailable = () => {
+        var conflict = [];
+        termCourses.map(([selected_id, selected_course]) => {
+            // map through the cards that are currently being picked
+            if( selected.includes(selected_id) && selected_course.meets !== "") {
+                const [days, time] = (selected_course.meets).split(' ');
+                termCourses.map(([id, course]) => {
+                    const [d, t] = (course.meets).split(' ');
+                    if( selected_course.number !== course.number && checkDayOverlap(days, d)
+                        && checkTimeOverlap(time, t)){
+                        conflict = [...conflict, id];
+                    }
+                });
+            }
+        });
+        setNotAvailable([...notAvailable, ...conflict]);
+    }
+
     const [selected, setSelected] = useState([]);
 
-    const toggleSelected = (item) => setSelected(
-      selected.includes(item)
-      ? selected.filter(x => x !== item)
-      : [...selected, item]
-    );
+    const toggleSelected = (item) => {
+      setNotAvailable([]);
+      setSelected(
+        selected.includes(item)
+        ? selected.filter(x => x !== item)
+        : [...selected, item]
+        )
+    }
+
+    useEffect(() => {
+        console.log("selected updated:", selected);
+        toggleAvailable();
+    }, [selected, setNotAvailable]);
 
     const [show, setShow] = useState(false);
 
@@ -59,8 +103,8 @@ const CourseList = ({courses}) => {
                 { termCourses.map(([id, course]) => 
                     <Card 
                         className={`shadow ${selected.includes(id) ? 'bg-success text-white' : 'bg-light'}`} 
-                        style={{ width: '18rem', cursor: 'pointer', gap: '20px' }}
-                        onClick={() => toggleSelected(id)}
+                        style={{ opacity: notAvailable.includes(id) ? 0.5 : 1, pointerEvents: notAvailable.includes(id) ? 'none' : 'auto', width: '18rem', cursor: 'pointer', gap: '20px' }}
+                        onClick={() => {toggleSelected(id)}}
                     >
                         <Card.Body>
                             <Card.Title>{course.term} CS {course.number}</Card.Title>
@@ -72,7 +116,6 @@ const CourseList = ({courses}) => {
             </div>
             <ScheduleModal show={show} handleClose={handleClose} selected={selected} termCourses={termCourses}/>
         </div>
-       
     );
 }
 export default CourseList;

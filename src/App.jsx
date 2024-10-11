@@ -7,7 +7,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import Banner from './components/Banner'
 import CourseList from './components/CourseList';
+import EditForm from './components/EditForm';
 import { useJsonQuery } from './utilities/fetch';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 
 const Main = () => {
   const [data, isLoading, error] = useJsonQuery("https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php");
@@ -19,7 +22,13 @@ const Main = () => {
   return (
     <div className="App">
       <Banner title={data.title} />
-      <CourseList courses={data.courses} />
+
+      <Router>
+        <Routes>
+          <Route path="/" element={<CourseList courses={data.courses}/>} />
+          <Route path="/course-form" element={<EditForm />} />
+        </Routes>
+      </Router>
     </div>
   );
 };

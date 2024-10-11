@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Card, Button, Container } from 'react-bootstrap';
 import ScheduleModal from './ScheduleModal';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 const terms = {
     Fall: 'Fall',
@@ -84,7 +86,6 @@ const CourseList = ({courses}) => {
     }
 
     useEffect(() => {
-        console.log("selected updated:", selected);
         toggleAvailable();
     }, [selected, setNotAvailable]);
 
@@ -92,6 +93,8 @@ const CourseList = ({courses}) => {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const navigate = useNavigate();
 
     return(
         <div>
@@ -110,6 +113,17 @@ const CourseList = ({courses}) => {
                             <Card.Title>{course.term} CS {course.number}</Card.Title>
                             <Card.Text>{course.title}</Card.Text>
                             <Card.Text>{course.meets}</Card.Text>
+                            <Button onClick={() => {
+                                navigate('/course-form',
+                                { 
+                                    state: { 
+                                        courseTitle: course.title, 
+                                        courseMeets: course.meets 
+                                    } 
+                                }
+                                )
+                            }}
+                            >Edit</Button>
                         </Card.Body>    
                     </Card>
                 )}

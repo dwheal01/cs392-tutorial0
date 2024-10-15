@@ -40,7 +40,7 @@ const makeResult = (error) => {
 
 export const useDbUpdate = (path) => {
   const [result, setResult] = useState();
-  const updateData = useCallback((value) => {
+  const updateData = useCallback(async(value) => {
     update(ref(database, path), value)
     .then(() => setResult(makeResult()))
     .catch((error) => setResult(makeResult(error)))

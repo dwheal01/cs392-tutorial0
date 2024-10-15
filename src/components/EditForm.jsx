@@ -2,18 +2,24 @@ import { Container, Form, Button } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useDbUpdate } from '../utilities/firebase';
 
 
 const EditForm = () => {
+    // const [updateData, result] = useDbUpdate(`/courses/`);
     const location = useLocation();
+    const [id, setId] = useState('');
+    const [course, setCourse] = useState('');
     const [title, setTitle] = useState('');
     const [meetingTimes, setMeetingTimes] = useState('');
 
     useEffect(() => {
-        const { courseTitle, courseMeets } = location.state || {};
-        if (courseTitle && courseMeets) {
-            setTitle(courseTitle);
-            setMeetingTimes(courseMeets);
+        const { id, course, courseTitle, courseMeets } = location.state || {};
+        if (id && course && courseTitle && courseMeets) {
+            setId(id);
+            setCourse(course);
+            setTitle(course.title);
+            setMeetingTimes(course.meets);
         }
     }, [location.state]);
     const navigate = useNavigate();
@@ -42,10 +48,28 @@ const EditForm = () => {
             correct &= (([...startHr, ...startMin, ...endHr, ...endMin]).every(t => !isNaN(t)));
         }
         catch {
-            console.log('bad');
             correct &= false;
         }
         (correct) ? setIsValidMeeting(true) : setIsValidMeeting(false);
+    }
+
+    const [updateData, result] = useDbUpdate(`/courses/${id}`);
+    const changeCourse = async(evt) => {
+        const updatedData = { ...(course), title: title, meets : meetingTimes };
+
+        if(isValidTitle !== false && isValidMeeting !== false && 
+            (course.title !== title || course.meets !== meetingTimes))
+            {
+                evt.preventDefault();
+                try{
+                    await(updateData(updatedData));
+                    navigate('/');
+                } 
+                catch (error) {
+                    console.error("Error occurred:", error.message);
+                }
+                return;
+            }
     }
 
     return (
@@ -80,6 +104,9 @@ const EditForm = () => {
                     must contain days and start-end, e.g., MWF 12:00-13:20
                     </Form.Control.Feedback>
                 </Form.Group>
+                <Button variant="primary" onClick={changeCourse}>
+                    Submit
+                </Button>
                 <Button variant="danger" onClick={() => {navigate('/')}}>
                     Cancel
                 </Button>

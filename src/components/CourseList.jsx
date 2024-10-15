@@ -117,6 +117,8 @@ const CourseList = ({courses}) => {
                                 navigate('/course-form',
                                 { 
                                     state: { 
+                                        id: id, 
+                                        course: course,
                                         courseTitle: course.title, 
                                         courseMeets: course.meets 
                                     } 

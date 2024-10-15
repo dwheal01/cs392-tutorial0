@@ -14,8 +14,8 @@ const EditForm = () => {
     const [meetingTimes, setMeetingTimes] = useState('');
 
     useEffect(() => {
-        const { id, course, courseTitle, courseMeets } = location.state || {};
-        if (id && course && courseTitle && courseMeets) {
+        const { id, course } = location.state || {};
+        if (id && course) {
             setId(id);
             setCourse(course);
             setTitle(course.title);

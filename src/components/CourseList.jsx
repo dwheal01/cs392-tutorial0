@@ -118,9 +118,7 @@ const CourseList = ({courses}) => {
                                 { 
                                     state: { 
                                         id: id, 
-                                        course: course,
-                                        courseTitle: course.title, 
-                                        courseMeets: course.meets 
+                                        course: course
                                     } 
                                 }
                                 )

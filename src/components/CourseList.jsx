@@ -4,6 +4,8 @@ import { Card, Button, Container } from 'react-bootstrap';
 import ScheduleModal from './ScheduleModal';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthButton from './SingIn';
+import { useAuthState } from '../utilities/firebase';
 
 
 const terms = {
@@ -95,12 +97,14 @@ const CourseList = ({courses}) => {
     const handleShow = () => setShow(true);
 
     const navigate = useNavigate();
-
+    const [user] = useAuthState();
+    
     return(
         <div>
             <Container className="d-flex justify-content-between">
                 <TermSelector selection={selection} setSelection={setSelection} />
                 <Button onClick={handleShow}>Course Plan</Button>
+                <AuthButton/>
             </Container>
             <div className="class-list">
                 { termCourses.map(([id, course]) => 
@@ -113,7 +117,7 @@ const CourseList = ({courses}) => {
                             <Card.Title>{course.term} CS {course.number}</Card.Title>
                             <Card.Text>{course.title}</Card.Text>
                             <Card.Text>{course.meets}</Card.Text>
-                            <Button onClick={() => {
+                            {user && <Button onClick={() => {
                                 navigate('/course-form',
                                 { 
                                     state: { 
@@ -123,7 +127,7 @@ const CourseList = ({courses}) => {
                                 }
                                 )
                             }}
-                            >Edit</Button>
+                            >Edit</Button>}
                         </Card.Body>    
                     </Card>
                 )}

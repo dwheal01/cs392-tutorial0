@@ -5,7 +5,7 @@ import ScheduleModal from './ScheduleModal';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthButton from './SingIn';
-import { useAuthState } from '../utilities/firebase';
+import { useProfile } from '../utilities/firebase';
 
 
 const terms = {
@@ -97,14 +97,19 @@ const CourseList = ({courses}) => {
     const handleShow = () => setShow(true);
 
     const navigate = useNavigate();
-    const [user] = useAuthState();
+    const [profile] = useProfile();
     
     return(
         <div>
             <Container className="d-flex justify-content-between">
-                <TermSelector selection={selection} setSelection={setSelection} />
-                <Button onClick={handleShow}>Course Plan</Button>
-                <AuthButton/>
+                <div className="d-flex align-items-center">
+                    <TermSelector selection={selection} setSelection={setSelection} />
+                </div>
+                <div className="d-flex">
+
+                    <Button onClick={handleShow}>Course Plan</Button>
+                    <AuthButton/>
+                </div>
             </Container>
             <div className="class-list">
                 { termCourses.map(([id, course]) => 
@@ -117,7 +122,7 @@ const CourseList = ({courses}) => {
                             <Card.Title>{course.term} CS {course.number}</Card.Title>
                             <Card.Text>{course.title}</Card.Text>
                             <Card.Text>{course.meets}</Card.Text>
-                            {user && <Button onClick={() => {
+                            {profile.isAdmin && <Button onClick={() => {
                                 navigate('/course-form',
                                 { 
                                     state: { 
